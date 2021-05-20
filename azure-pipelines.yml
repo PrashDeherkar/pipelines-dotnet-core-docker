@@ -10,18 +10,6 @@ variables:
   containerRegistry: azpipeline.azurecr.io
   imageRepository: pipeline-dotnet-core-repo
   tag: pipe
-- task: AzureRmWebAppDeployment@4
-  inputs:
-    ConnectionType: 'AzureRM'
-    azureSubscription: 'Visual Studio Enterprise Subscription(1)(f3db38e4-7ef9-47a4-bc34-c4a57388ea5d)'
-    appType: 'webAppLinux'
-    WebAppName: 'az-app'
-    deployToSlotOrASE: true
-    ResourceGroupName: 'rg-azurepipeline'
-    SlotName: 'production'
-    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
-    RuntimeStack: 'DOTNETCORE|3.1'
-
 trigger:
 - master
 
@@ -38,9 +26,14 @@ steps:
   displayName: 'Run a multi-line script'
 
 ## Add the below snippet at the end of your pipeline
-- task: AzureWebAppContainer@1
-  displayName: 'Azure Web App on Container Deploy'
+- task: AzureRmWebAppDeployment@4
   inputs:
-    azureSubscription: $(azureSubscription)
-    appName: $(appName)
-    containers: $(containerRegistry)/$(imageRepository):$(tag)
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Visual Studio Enterprise Subscription(1)(f3db38e4-7ef9-47a4-bc34-c4a57388ea5d)'
+    appType: 'webAppLinux'
+    WebAppName: 'az-app'
+    deployToSlotOrASE: true
+    ResourceGroupName: 'rg-azurepipeline'
+    SlotName: 'production'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    RuntimeStack: 'DOTNETCORE|3.1'
