@@ -1,0 +1,50 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+variables: 
+  ## Add this under variables section in the pipeline
+  azureSubscription: f3db38e4-7ef9-47a4-bc34-c4a57388ea5d
+  appName: https://az-app.azurewebsites.net
+  containerRegistry: azpipeline.azurecr.io
+  imageRepository: pipeline-dotnet-core-repo
+  tag: pipe
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
+- script: |
+    echo Add other tasks to build, test, and deploy your project.
+    echo See https://aka.ms/yaml
+  displayName: 'Run a multi-line script'
+
+## Add the below snippet at the end of your pipeline
+
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    rootFolderOrFile: '$(Build.BinariesDirectory)'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+    RuntimeStack: 'DOTNETCORE|3.1'
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Visual Studio Enterprise Subscription(1)(f3db38e4-7ef9-47a4-bc34-c4a57388ea5d)'
+    appType: 'webAppLinux'
+    WebAppName: 'az-app'
+    deployToSlotOrASE: true
+    ResourceGroupName: 'rg-azurepipeline'
+    SlotName: 'production'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/*.zip'
