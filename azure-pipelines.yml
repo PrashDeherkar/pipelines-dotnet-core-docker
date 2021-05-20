@@ -26,6 +26,18 @@ steps:
   displayName: 'Run a multi-line script'
 
 ## Add the below snippet at the end of your pipeline
+
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    rootFolderOrFile: '$(Build.BinariesDirectory)'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+    RuntimeStack: 'DOTNETCORE|3.1'
 - task: AzureRmWebAppDeployment@4
   inputs:
     ConnectionType: 'AzureRM'
@@ -35,5 +47,4 @@ steps:
     deployToSlotOrASE: true
     ResourceGroupName: 'rg-azurepipeline'
     SlotName: 'production'
-    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
-    RuntimeStack: 'DOTNETCORE|3.1'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/*.zip'
